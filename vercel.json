@@ -11,5 +11,13 @@
       "src": "/api/(.*)",
       "dest": "/api/$1"
     }
-  ]
+  ],
+  "functions": {
+    "api/webhook.js": {
+      "maxDuration": 10
+    },
+    "api/test.js": {
+      "maxDuration": 5
+    }
+  }
 }
