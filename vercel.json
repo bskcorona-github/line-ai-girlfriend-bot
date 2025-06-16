@@ -15,6 +15,15 @@
     },
     "api/debug.js": {
       "maxDuration": 5
+    },
+    "api/stripe-webhook.js": {
+      "maxDuration": 10
+    },
+    "api/payment/success.js": {
+      "maxDuration": 5
+    },
+    "api/payment/cancel.js": {
+      "maxDuration": 5
     }
   }
 }

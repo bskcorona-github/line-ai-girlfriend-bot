@@ -12,7 +12,9 @@
     "@line/bot-sdk": "^8.0.2",
     "openai": "^4.24.1",
     "axios": "^1.6.2",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "stripe": "^14.12.0",
+    "crypto": "^1.0.1"
   },
   "devDependencies": {
     "@vercel/node": "^3.0.12"
@@ -25,7 +27,8 @@
     "ai-girlfriend",
     "chatbot",
     "openai",
-    "gpt-4o"
+    "gpt-4o",
+    "subscription"
   ],
   "author": "Your Name",
   "license": "MIT"

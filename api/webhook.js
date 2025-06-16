@@ -2,6 +2,7 @@ const line = require("@line/bot-sdk");
 const CloudflareKV = require("../lib/cloudflare-kv");
 const OpenAIClient = require("../lib/openai-client");
 const CharacterManager = require("../lib/character-manager");
+const SubscriptionManager = require("../lib/subscription-manager");
 
 // LINE Bot設定
 const config = {
@@ -13,6 +14,7 @@ const client = new line.Client(config);
 const kv = new CloudflareKV();
 const ai = new OpenAIClient();
 const characterManager = new CharacterManager();
+const subscriptionManager = new SubscriptionManager();
 
 /**
  * メインのWebhook処理関数
@@ -63,6 +65,47 @@ async function handleEvent(event) {
   const userMessage = event.message.text;
 
   try {
+    // サブスクリプション状況チェック
+    const subscriptionStatus =
+      await subscriptionManager.checkSubscriptionStatus(userId);
+
+    // サブスクリプション関連コマンドの処理
+    if (
+      userMessage.includes("サブスク") ||
+      userMessage.includes("課金") ||
+      userMessage.includes("料金")
+    ) {
+      if (subscriptionStatus.isActive) {
+        const expiresAt = new Date(subscriptionStatus.expiresAt);
+        const character = await kv.getUserCharacter(userId);
+        await client.replyMessage(event.replyToken, {
+          type: "text",
+          text: `💕 ${character.name}です！\n\n✨ あなたは既にサブスクリプション登録済みです\n\n📅 有効期限: ${expiresAt.toLocaleDateString("ja-JP")}\n\n無制限でお話しできるよ〜💖`,
+        });
+      } else {
+        const paymentUrl = await subscriptionManager.createPaymentLink(userId);
+        const promptMessage = subscriptionManager.generateSubscriptionPrompt();
+
+        await client.replyMessage(event.replyToken, {
+          type: "text",
+          text: `${promptMessage}\n\n💳 決済はこちらから: ${paymentUrl}`,
+        });
+      }
+      return;
+    }
+
+    // 未課金ユーザーの場合はサブスクリプション誘導
+    if (!subscriptionStatus.isActive) {
+      const character = await kv.getUserCharacter(userId);
+      const paymentUrl = await subscriptionManager.createPaymentLink(userId);
+
+      await client.replyMessage(event.replyToken, {
+        type: "text",
+        text: `こんにちは！私は${character.name}です💕\n\n申し訳ありませんが、私とチャットするには\nサブスクリプション登録が必要です😊\n\n🌟 月額980円で無制限チャット\n✨ 今すぐ登録して一緒にお話ししましょう！\n\n💳 ${paymentUrl}`,
+      });
+      return;
+    }
+
     // 不適切コンテンツチェック
     const isAppropriate = await ai.moderateContent(userMessage);
     if (!isAppropriate) {
