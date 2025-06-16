@@ -164,9 +164,6 @@ async function handleEvent(event) {
  */
 async function handleNormalConversation(event, userId, userMessage, character) {
   try {
-    // タイピング表示
-    await client.pushMessage(userId, { type: "text", text: "..." });
-
     // 会話履歴と記憶を取得
     const [history, memory] = await Promise.all([
       kv.getConversationHistory(userId),
