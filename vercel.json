@@ -11,13 +11,5 @@
       "src": "/api/(.*)",
       "dest": "/api/$1"
     }
-  ],
-  "env": {
-    "LINE_CHANNEL_ACCESS_TOKEN": "@line-channel-access-token",
-    "LINE_CHANNEL_SECRET": "@line-channel-secret",
-    "OPENAI_API_KEY": "@openai-api-key",
-    "CLOUDFLARE_ACCOUNT_ID": "@cloudflare-account-id",
-    "CLOUDFLARE_KV_NAMESPACE_ID": "@cloudflare-kv-namespace-id",
-    "CLOUDFLARE_API_TOKEN": "@cloudflare-api-token"
-  }
+  ]
 }
